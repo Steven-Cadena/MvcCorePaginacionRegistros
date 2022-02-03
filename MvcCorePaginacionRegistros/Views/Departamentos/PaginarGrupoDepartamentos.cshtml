@@ -1,0 +1,54 @@
+﻿@model List<Departamento>
+
+@{
+    ViewData["Title"] = "PaginarGrupoDepartamentos";
+}
+@{
+    int numeroPagina = 1;
+    int numeroregistros = (int)ViewData["NUMEROREGISTROS"];
+
+}
+
+<h1>Paginar Grupo Departamentos</h1>
+
+/*paginacion razor siempre es mejor hacerlo así*/
+/<h2>Paginación en razor</h2>
+<ul class="list-group list-group-horizontal">
+    @for (int i = 1; i <= numeroregistros; i += 2)
+    {
+        <li class="list-group-item list-group-item-warning">
+            <a asp-controller="Departamentos"
+               asp-action="PaginarGrupoDepartamentos"
+               asp-route-posicion="@i">
+                @numeroPagina
+            </a>
+        </li>
+        numeroPagina += 1;
+    }
+</ul>
+
+<table class="table table-danger">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>NOMBRE</th>
+            <th>LOCALIDAD</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdDepartament)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Localidad)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
