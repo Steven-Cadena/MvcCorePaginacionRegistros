@@ -52,6 +52,7 @@ namespace MvcCorePaginacionRegistros.Repositories
             return consulta.FirstOrDefault();
         }
 
+        
         public List<VistaDepartamento> GetGrupoVistaDepartamento(int posicion)
         {
             //select * from V_DEPT_INDIVIUAL
@@ -64,13 +65,26 @@ namespace MvcCorePaginacionRegistros.Repositories
         }
 
         /*metodos para crear paginacion con procedimientos almacenados*/
-        public List<Departamento> GetGrupoDepartamentos(int posicion)
+        /*variable de salida por referencia importante*/
+        public List<Departamento> GetGrupoDepartamentos(int posicion, ref int numeroregistros)
         {
             /*entity framework procedimientos almacenados*/
-            string sql = "SP_PAGINARGRUPO_DEPARTAMENTOS @POSICION";
+            string sql = "SP_PAGINARGRUPO_DEPARTAMENTOS @POSICION , @registros OUT";
             SqlParameter paramposicion = new SqlParameter("@POSICION", posicion);
-            var consulta = this.context.Departamentos.FromSqlRaw(sql, paramposicion);
-            return consulta.ToList();
+            SqlParameter paramregistros = new SqlParameter("@registros", -1);
+            paramregistros.Direction = System.Data.ParameterDirection.Output;
+            /*importante el registro*/
+            var consulta = this.context.Departamentos.FromSqlRaw(sql, paramposicion,paramregistros);
+            /*paso importante que debemos leer antes uqe procesar el dato de salida*/
+            List<Departamento> departamentos = consulta.ToList();
+            numeroregistros = (int)paramregistros.Value;
+            //COMO ENVIAMOS EL NUMERO DE REGISTROS AL CONTROLLER ???
+            return departamentos;
+        }
+        /*metodos para su paginacion de empleados por OFICIO*/
+        public List<Empleado> GetEmpleadosOficio(string oficio) 
+        {
+            
         }
     }
 }

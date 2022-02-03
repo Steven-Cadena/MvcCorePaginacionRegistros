@@ -86,10 +86,16 @@ namespace MvcCorePaginacionRegistros.Controllers
             {
                 posicion = 1;
             }
-            int numeroregistros = this.repo.GetNumeroRegistros();
+            int numeroregistros = 0;
+            List<Departamento> departamentos = this.repo.GetGrupoDepartamentos(posicion.Value,ref numeroregistros);
             ViewData["NUMEROREGISTROS"] = numeroregistros;
-            List<Departamento> departamentos = this.repo.GetGrupoDepartamentos(posicion.Value);
             return View(departamentos);
+        }
+
+        /*paginacion de empleados por su OFICIO*/
+        public IActionResult PaginacionEmpleadosOficio() 
+        {
+            return View();
         }
     }
 }
