@@ -93,9 +93,31 @@ namespace MvcCorePaginacionRegistros.Controllers
         }
 
         /*paginacion de empleados por su OFICIO*/
-        public IActionResult PaginacionEmpleadosOficio() 
+        public IActionResult PaginarGrupoEmpleadosOficio( int? posicion ,string oficio)
         {
-            return View();
+            if (posicion == null)
+            {
+                posicion = 1;
+                return View();
+            }
+            else 
+            {
+                int numeroregistros = 0;
+                List<Empleado> empleados = this.repo.GetEmpleadosOficio(posicion.Value, oficio, ref numeroregistros);
+                ViewData["NUMEROREGISTROS"] = numeroregistros;
+                ViewData["OFICIO"] = oficio;
+                return View(empleados);
+            }
+        }
+        [HttpPost]
+        public IActionResult PaginarGrupoEmpleadosOficio(string oficio) 
+        {
+            /*importante que empiece en la posicion 1, ya que empiexa a buscar por un nuevo oficio*/
+            int numeroregistros = 0;
+            List<Empleado> empleados = this.repo.GetEmpleadosOficio(1, oficio, ref numeroregistros);
+            ViewData["NUMEROREGISTROS"] = numeroregistros;
+            ViewData["OFICIO"] = oficio;
+            return View(empleados);
         }
     }
 }

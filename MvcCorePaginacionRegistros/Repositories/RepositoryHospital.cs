@@ -27,6 +27,42 @@ using System.Threading.Tasks;
 //    select dept_no, dnombre, loc from V_DEPT_INDIVIDUAL
 //	where posicion >= @POSICION and posicion <(@POSICION +2)
 //GO
+
+//ALTER procedure SP_PAGINARGRUPO_DEPARTAMENTOS
+//(@POSICION INT, @registros int out)
+//AS
+//    --UN PROCEDIMIENTO DE PAGINACION SIEMPRE
+//	--DEBE DEVOLVER EL NUMERO DE REGISTROS TOTALES
+//	select @registros = count(dept_no) from V_DEPT_INDIVIDUAL
+
+//    select dept_no, dnombre, loc from V_DEPT_INDIVIDUAL
+//	where posicion >= @POSICION and posicion < (@POSICION + 2)
+//GO
+#endregion
+#region SQL-VISTA y PROCEDIMIENTO EMPLEADO/OFICIO
+//create view V_EMP_INDIVIDUAL
+//as
+//	select * from emp
+//go
+
+//alter procedure SP_PAGINARGRUPO_EMPSALARIO
+//(@POSICION INT, @OFICIO NVARCHAR(50), @REGISTROS INT OUT)
+//AS
+//    select @registros = COUNT(emp_no) from EMP
+
+//    where OFICIO = @OFICIO
+
+//    SELECT* FROM(
+//    select CAST(
+//    row_number() over(order by emp_no) as int)
+//    as posicion, isnull(emp_no, 0) as emp_no
+//	, apellido,oficio,salario,comision from EMP where oficio = @OFICIO)AS QUERY
+//	where 
+//	query.posicion >= @POSICION 
+//	AND query.posicion <(@POSICION +3)
+//GO
+
+
 #endregion
 namespace MvcCorePaginacionRegistros.Repositories
 {
@@ -82,9 +118,17 @@ namespace MvcCorePaginacionRegistros.Repositories
             return departamentos;
         }
         /*metodos para su paginacion de empleados por OFICIO*/
-        public List<Empleado> GetEmpleadosOficio(string oficio) 
+        public List<Empleado> GetEmpleadosOficio(int posicion, string oficio, ref int numeroregistros) 
         {
-            
+            string sql = "SP_PAGINARGRUPO_EMPSALARIO @POSICION, @OFICIO,@REGISTROS OUT";
+            SqlParameter paramposicion = new SqlParameter("@POSICION", posicion);
+            SqlParameter paramoficio = new SqlParameter("@OFICIO", oficio);
+            SqlParameter paramregistros = new SqlParameter("@REGISTROS", -1);
+            paramregistros.Direction = System.Data.ParameterDirection.Output;
+            var consulta = this.context.Empleados.FromSqlRaw(sql, paramposicion, paramoficio, paramregistros);
+            List<Empleado> empleados = consulta.ToList();
+            numeroregistros = (int)paramregistros.Value;
+            return empleados;
         }
     }
 }

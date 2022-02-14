@@ -14,9 +14,9 @@ namespace MvcCorePaginacionRegistros.Models
         [Column("EMP_NO")]
         public int IdEmpleado { get; set; }
         [Column("APELLIDO")]
-        public int Apellido { get; set; }
+        public String Apellido { get; set; }
         [Column("OFICIO")]
-        public int Oficio { get; set; }
+        public String Oficio { get; set; }
         [Column("SALARIO")]
         public int Salario { get; set; }
         [Column("COMISION")]
